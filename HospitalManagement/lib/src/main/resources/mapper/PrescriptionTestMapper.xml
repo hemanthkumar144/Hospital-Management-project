@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.PrescriptionTestMapper">
+
+
+    <!-- =========================================================
+         RESULT MAP
+         ========================================================= -->
+
+    <resultMap id="prescriptionTestResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.PrescriptionTest">
+
+        <id property="prescriptionTestId"
+            column="prescription_test_id"/>
+
+        <result property="prescriptionId"
+                column="prescription_id"/>
+
+        <result property="testId"
+                column="test_id"/>
+
+    </resultMap>
+
+
+    <!-- =========================================================
+         ADD PRESCRIPTION TEST
+         ========================================================= -->
+
+    <insert id="addPrescriptionTest">
+
+        INSERT INTO prescription_test
+        (
+            prescription_test_id,
+            prescription_id,
+            test_id
+        )
+
+        VALUES
+        (
+            #{prescriptionTestId},
+            #{prescriptionId},
+            #{testId}
+        )
+
+    </insert>
+
+
+    <!-- =========================================================
+         GET TESTS BY PRESCRIPTION ID
+         ========================================================= -->
+
+    <select id="getTestsByPrescriptionId"
+            resultMap="prescriptionTestResultMap">
+
+        SELECT
+            prescription_test_id,
+            prescription_id,
+            test_id
+
+        FROM prescription_test
+
+        WHERE prescription_id = #{prescriptionId}
+
+        ORDER BY prescription_test_id
+
+    </select>
+
+
+    <!-- =========================================================
+         DELETE TESTS BY PRESCRIPTION ID
+         ========================================================= -->
+
+    <delete id="deleteByPrescriptionId">
+
+        DELETE FROM prescription_test
+
+        WHERE prescription_id = #{prescriptionId}
+
+    </delete>
+
+
+</mapper>

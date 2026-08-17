@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IAppointmentMapper">
+
+
+    <!-- ================= RESULT MAP ================= -->
+
+    <resultMap id="appointmentResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Appointment">
+
+        <id property="appointmentId"
+            column="appointment_id"/>
+
+        <result property="appointmentDate"
+                column="appointment_date"/>
+
+        <result property="appointmentTime"
+                column="appointment_time"/>
+                <result property="active"
+        column="active"/>
+
+
+        <!-- ================= PATIENT ================= -->
+
+        <association property="patient"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Patient">
+
+            <id property="patientId"
+                column="patient_id"/>
+
+            <result property="patientName"
+                    column="patient_name"/>
+
+            <result property="age"
+                    column="age"/>
+
+            <result property="gender"
+                    column="gender"/>
+
+            <result property="phone"
+                    column="phone"/>
+
+            <result property="active"
+                    column="active"/>
+
+        </association>
+
+
+        <!-- ================= DOCTOR ================= -->
+		<association property="doctor"
+             javaType="com.crimsonlogic.hospitalmanagement.model.Doctor">
+
+    <id property="staffId"
+        column="staff_id"/>
+
+    <result property="name"
+            column="staff_name"/>
+
+    <result property="consultationFee"
+            column="consultation_fee"/>
+
+	</association>
+        
+
+    </resultMap>
+
+
+    <!-- ================= ADD APPOINTMENT ================= -->
+
+    <insert id="addAppointment">
+
+        INSERT INTO appointment
+        (
+            appointment_id,
+            appointment_date,
+            appointment_time,
+            patient_id,
+            doctor_id,
+            active
+        )
+        VALUES
+        (
+            #{appointmentId},
+            #{appointmentDate},
+            #{appointmentTime},
+            #{patient.patientId},
+            #{doctor.staffId},
+            #{active}
+        )
+
+    </insert>
+    <select id="getAppointmentsByDoctorAndDateRange"
+        resultMap="appointmentResultMap">
+
+    SELECT a.*,
+           p.patient_name,
+           p.age,
+           p.gender,
+           p.phone,
+           d.staff_id,
+			d.staff_name,
+			d.specialization,
+			d.consultation_fee
+
+    FROM appointment a
+
+    JOIN patient p
+        ON a.patient_id = p.patient_id
+
+    JOIN doctor d
+        ON a.doctor_id = d.staff_id
+
+    WHERE a.doctor_id = #{doctorId}
+      AND a.appointment_date
+          BETWEEN #{fromDate} AND #{toDate}
+      AND a.active = true
+
+    ORDER BY a.appointment_date,
+             a.appointment_time
+
+</select>
+
+
+    <!-- ================= GET APPOINTMENT ================= -->
+
+    <select id="getAppointmentById"
+            resultMap="appointmentResultMap">
+
+        SELECT
+            a.*,
+
+            p.patient_id,
+            p.patient_name,
+            p.age,
+            p.gender,
+            p.phone,
+            p.active,
+
+            d.staff_id,
+			d.staff_name,
+			d.specialization,
+			d.consultation_fee
+
+        FROM appointment a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN doctor d
+            ON a.doctor_id = d.staff_id
+
+        WHERE a.appointment_id = #{appointmentId}
+
+    </select>
+
+
+    <!-- ================= LIST APPOINTMENTS ================= -->
+
+    <select id="getAllAppointments"
+            resultMap="appointmentResultMap">
+
+        SELECT
+            a.*,
+
+            p.patient_id,
+            p.patient_name,
+            p.age,
+            p.gender,
+            p.phone,
+            p.active,
+
+            d.staff_id,
+			d.staff_name,
+			d.specialization,
+			d.consultation_fee
+
+        FROM appointment a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN doctor d
+            ON a.doctor_id = d.staff_id
+
+        WHERE a.active = TRUE
+
+    </select>
+    
+    
+    <select id="getAppointmentsByPatientId"
+        resultMap="appointmentResultMap">
+
+    SELECT
+        a.*,
+
+        p.patient_id,
+        p.patient_name,
+        p.age,
+        p.gender,
+        p.phone,
+        p.active,
+
+         d.staff_id,
+			d.staff_name,
+			d.specialization,
+			d.consultation_fee
+
+    FROM appointment a
+
+    JOIN patient p
+        ON a.patient_id = p.patient_id
+
+    JOIN doctor d
+        ON a.doctor_id = d.staff_id
+
+    WHERE a.patient_id = #{patientId}
+      AND a.active = TRUE
+
+    ORDER BY a.appointment_date,
+             a.appointment_time
+
+</select>
+
+
+    <!-- ================= UPDATE APPOINTMENT ================= -->
+
+    <update id="updateAppointment">
+
+        UPDATE appointment
+
+        SET
+            appointment_date = #{appointmentDate},
+            appointment_time = #{appointmentTime},
+            patient_id = #{patient.patientId},
+            doctor_id = #{doctor.staffId}
+
+        WHERE appointment_id = #{appointmentId}
+
+    </update>
+
+
+    <!-- ================= DELETE APPOINTMENT ================= -->
+
+    <update id="deleteAppointment">
+
+        UPDATE appointment
+
+        SET active = FALSE
+
+        WHERE appointment_id = #{appointmentId}
+
+    </update>
+
+
+</mapper>

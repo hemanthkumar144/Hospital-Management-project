@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IDepartmentMapper">
+
+    <resultMap id="departmentResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Department">
+
+        <id property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="location" column="location"/>
+        <result property="active"
+                column="active"/>
+
+    </resultMap>
+<insert id="addDepartment">
+
+    INSERT INTO department
+    (
+        department_id,
+        department_name,
+        location,
+        active
+    )
+    VALUES
+    (
+        #{departmentId},
+        #{departmentName},
+        #{location},
+        #{active}
+    )
+
+</insert>
+
+    <select id="getDepartmentById"
+            resultMap="departmentResultMap">
+
+        SELECT *
+        FROM department
+        WHERE department_id = #{departmentId}
+
+    </select>
+
+    <select id="getAllDepartments"
+            resultMap="departmentResultMap">
+
+        SELECT *
+        FROM department
+
+    </select>
+
+    <update id="updateDepartment">
+
+    UPDATE department
+
+    SET department_name = #{departmentName},
+        location = #{location}
+
+    WHERE department_id = #{departmentId}
+      AND active = TRUE
+
+</update>
+
+    <update id="deleteDepartment">
+    update department set active= false
+    WHERE department_id = #{departmentId}
+</update>
+
+
+
+</mapper>

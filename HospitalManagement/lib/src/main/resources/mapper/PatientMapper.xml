@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IPatientMapper">
+
+    <resultMap id="patientResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Patient">
+
+        <id property="patientId" column="patient_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="patientName" column="patient_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="phone" column="phone"/>
+        <result property="active" column="active"/>
+
+        <association property="address"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Address">
+
+            <id property="addressId" column="address_id"/>
+            <result property="street" column="street"/>
+            <result property="city" column="city"/>
+            <result property="state" column="state"/>
+            <result property="pincode" column="pincode"/>
+
+        </association>
+
+    </resultMap>
+
+    <insert id="addPatient">
+        INSERT INTO patient
+        (
+            patient_id,
+            user_id,
+            patient_name,
+            age,
+            gender,
+            phone,
+            address_id
+        )
+        VALUES
+        (
+            #{patientId},
+            #{userId},
+            #{patientName},
+            #{age},
+            #{gender},
+            #{phone},
+            #{address.addressId}
+        )
+    </insert>
+
+    <select id="getPatientByUserId"
+            resultMap="patientResultMap">
+
+        SELECT p.*,
+               a.street,
+               a.city,
+               a.state,
+               a.pincode
+        FROM patient p
+        JOIN address a
+          ON p.address_id = a.address_id
+        WHERE p.user_id = #{userId}
+          AND p.active = TRUE
+
+    </select>
+
+    <insert id="addAddress">
+        INSERT INTO address
+        (
+            address_id,
+            street,
+            city,
+            state,
+            pincode
+        )
+        VALUES
+        (
+            #{addressId},
+            #{street},
+            #{city},
+            #{state},
+            #{pincode}
+        )
+    </insert>
+
+    <select id="getPatientById"
+            resultMap="patientResultMap">
+
+        SELECT p.*,
+               a.street,
+               a.city,
+               a.state,
+               a.pincode
+        FROM patient p
+        JOIN address a
+          ON p.address_id = a.address_id
+        WHERE p.patient_id = #{patientId}
+
+    </select>
+
+    <update id="updatePatient">
+        UPDATE patient
+        SET patient_name = #{patientName},
+            age = #{age},
+            gender = #{gender},
+            phone = #{phone},
+            address_id = #{address.addressId}
+        WHERE patient_id = #{patientId}
+    </update>
+
+    <update id="deletePatient">
+        UPDATE patient
+        SET active = FALSE
+        WHERE patient_id = #{patientId}
+    </update>
+
+    <select id="getAllPatients"
+            resultMap="patientResultMap">
+
+        SELECT p.*,
+               a.street,
+               a.city,
+               a.state,
+               a.pincode
+        FROM patient p
+        JOIN address a
+          ON p.address_id = a.address_id
+        WHERE p.active = TRUE
+
+    </select>
+
+</mapper>

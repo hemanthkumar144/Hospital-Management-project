@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IPrescriptionMapper">
+
+
+    <!-- =====================================================
+         PRESCRIPTION RESULT MAP
+         ===================================================== -->
+
+    <resultMap id="prescriptionResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Prescription">
+
+        <id property="prescriptionId"
+            column="prescription_id"/>
+
+        <result property="prescriptionDate"
+                column="prescription_date"/>
+
+        <result property="instructions"
+                column="instructions"/>
+
+        <result property="active"
+                column="active"/>
+
+
+        <!-- =================================================
+             PATIENT
+             ================================================= -->
+
+        <association property="patient"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Patient">
+
+            <id property="patientId"
+                column="patient_id"/>
+
+        </association>
+
+
+        <!-- =================================================
+             DOCTOR
+             ================================================= -->
+
+        <association property="doctor"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Doctor">
+
+            <id property="doctorId"
+                column="staff_id"/>
+
+        </association>
+
+
+        <!-- =================================================
+             MEDICINES
+             ================================================= -->
+
+        <collection property="medicines"
+                    ofType="com.crimsonlogic.hospitalmanagement.model.PrescriptionMedicine"
+                    select="com.crimsonlogic.hospitalmanagement.mapper.PrescriptionMedicineMapper.getMedicinesByPrescriptionId"
+                    column="prescription_id"/>
+
+
+        <!-- =================================================
+             TESTS
+             ================================================= -->
+
+        <collection property="tests"
+                    ofType="com.crimsonlogic.hospitalmanagement.model.PrescriptionTest"
+                    select="com.crimsonlogic.hospitalmanagement.mapper.PrescriptionTestMapper.getTestsByPrescriptionId"
+                    column="prescription_id"/>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         ADD PRESCRIPTION
+         ===================================================== -->
+
+    <insert id="addPrescription">
+
+        INSERT INTO prescription
+        (
+            prescription_id,
+            patient_id,
+            doctor_id,
+            instructions,
+            prescription_date,
+            active
+        )
+
+        VALUES
+        (
+            #{prescriptionId},
+            #{patient.patientId},
+            #{doctor.staffId},
+            #{instructions},
+            #{prescriptionDate},
+            #{active}
+        )
+
+    </insert>
+
+
+    <!-- =====================================================
+         GET PRESCRIPTION BY ID
+         ===================================================== -->
+
+    <select id="getPrescriptionById"
+            resultMap="prescriptionResultMap">
+
+        SELECT
+            prescription_id,
+            patient_id,
+            doctor_id,
+            instructions,
+            prescription_date,
+            active
+
+        FROM prescription
+
+        WHERE prescription_id =
+              #{prescriptionId}
+
+    </select>
+
+
+    <!-- =====================================================
+         GET ALL PRESCRIPTIONS
+         ===================================================== -->
+
+    <select id="getAllPrescriptions"
+            resultMap="prescriptionResultMap">
+
+        SELECT
+            prescription_id,
+            patient_id,
+            doctor_id,
+            instructions,
+            prescription_date,
+            active
+
+        FROM prescription
+
+        WHERE active = TRUE
+
+        ORDER BY prescription_date DESC
+
+    </select>
+
+
+    <!-- =====================================================
+         UPDATE PRESCRIPTION
+         ===================================================== -->
+
+    <update id="updatePrescription">
+
+        UPDATE prescription
+
+        SET
+            patient_id = #{patient.patientId},
+            doctor_id = #{doctor.staffId},
+            instructions = #{instructions},
+            prescription_date = #{prescriptionDate}
+
+        WHERE prescription_id =
+              #{prescriptionId}
+
+    </update>
+
+
+    <!-- =====================================================
+         SOFT DELETE PRESCRIPTION
+         ===================================================== -->
+
+    <update id="deletePrescription">
+
+        UPDATE prescription
+
+        SET active = FALSE
+
+        WHERE prescription_id =
+              #{prescriptionId}
+
+    </update>
+
+</mapper>

@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IAdmissionMapper">
+
+
+    <!-- =====================================================
+         ADMISSION RESULT MAP
+         ===================================================== -->
+
+    <resultMap id="admissionResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Admission">
+
+        <id property="admissionId"
+            column="admission_id"/>
+
+        <result property="admissionDate"
+                column="admission_date"/>
+
+        <result property="dischargeDate"
+                column="discharge_date"/>
+
+        <result property="status"
+                column="status"/>
+
+        <result property="active"
+                column="admission_active"/>
+
+
+        <!-- =================================================
+             PATIENT
+             ================================================= -->
+
+        <association property="patient"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Patient">
+
+            <id property="patientId"
+                column="patient_id"/>
+
+            <result property="patientName"
+                    column="patient_name"/>
+
+            <result property="age"
+                    column="patient_age"/>
+
+            <result property="gender"
+                    column="patient_gender"/>
+
+            <result property="phone"
+                    column="patient_phone"/>
+
+            <result property="active"
+                    column="patient_active"/>
+
+        </association>
+
+
+        <!-- =================================================
+             BED
+             ================================================= -->
+
+        <association property="bed"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Bed">
+
+            <id property="bedId"
+                column="bed_id"/>
+
+            <result property="availability"
+                    column="availability"/>
+
+            <result property="active"
+                    column="bed_active"/>
+
+
+            <!-- =============================================
+                 WARD
+                 ============================================= -->
+
+            <association property="ward"
+                         javaType="com.crimsonlogic.hospitalmanagement.model.Ward">
+
+                <id property="wardId"
+                    column="ward_id"/>
+
+                <result property="wardName"
+                        column="ward_name"/>
+
+                <result property="wardType"
+                        column="ward_type"/>
+
+                <result property="bedCharge"
+                        column="bed_charge"/>
+
+                <result property="active"
+                        column="ward_active"/>
+
+            </association>
+
+        </association>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         ADD ADMISSION
+         ===================================================== -->
+
+    <insert id="addAdmission">
+
+        INSERT INTO admission
+        (
+            admission_id,
+            patient_id,
+            bed_id,
+            admission_date,
+            discharge_date,
+            status,
+            active
+        )
+        VALUES
+        (
+            #{admissionId},
+            #{patient.patientId},
+            #{bed.bedId},
+            #{admissionDate},
+            #{dischargeDate},
+            #{status},
+            #{active}
+        )
+
+    </insert>
+
+
+    <!-- =====================================================
+         GET ADMISSION BY ID
+         ===================================================== -->
+
+    <select id="getAdmissionById"
+            resultMap="admissionResultMap">
+
+        SELECT
+
+            a.admission_id,
+            a.admission_date,
+            a.discharge_date,
+            a.status,
+            a.active AS admission_active,
+
+            p.patient_id,
+            p.patient_name,
+            p.age AS patient_age,
+            p.gender AS patient_gender,
+            p.phone AS patient_phone,
+            p.active AS patient_active,
+
+            b.bed_id,
+            b.availability,
+            b.active AS bed_active,
+
+            w.ward_id,
+            w.ward_name,
+            w.ward_type,
+            w.bed_charge,
+            w.active AS ward_active
+
+        FROM admission a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN bed b
+            ON a.bed_id = b.bed_id
+
+        JOIN ward w
+            ON b.ward_id = w.ward_id
+
+        WHERE a.admission_id = #{admissionId}
+
+    </select>
+
+
+    <!-- =====================================================
+         ACTIVE ADMISSION BY PATIENT
+         ===================================================== -->
+
+    <select id="getActiveAdmissionByPatient"
+            resultMap="admissionResultMap">
+
+        SELECT
+
+            a.admission_id,
+            a.admission_date,
+            a.discharge_date,
+            a.status,
+            a.active AS admission_active,
+
+            p.patient_id,
+            p.patient_name,
+            p.age AS patient_age,
+            p.gender AS patient_gender,
+            p.phone AS patient_phone,
+            p.active AS patient_active,
+
+            b.bed_id,
+            b.availability,
+            b.active AS bed_active,
+
+            w.ward_id,
+            w.ward_name,
+            w.ward_type,
+            w.bed_charge,
+            w.active AS ward_active
+
+        FROM admission a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN bed b
+            ON a.bed_id = b.bed_id
+
+        JOIN ward w
+            ON b.ward_id = w.ward_id
+
+        WHERE a.patient_id = #{patientId}
+
+          AND a.status = 'ADMITTED'
+
+          AND a.active = TRUE
+
+    </select>
+
+
+    <!-- =====================================================
+         ACTIVE ADMISSION BY BED
+         ===================================================== -->
+
+    <select id="getActiveAdmissionByBed"
+            resultMap="admissionResultMap">
+
+        SELECT
+
+            a.admission_id,
+            a.admission_date,
+            a.discharge_date,
+            a.status,
+            a.active AS admission_active,
+
+            p.patient_id,
+            p.patient_name,
+            p.age AS patient_age,
+            p.gender AS patient_gender,
+            p.phone AS patient_phone,
+            p.active AS patient_active,
+
+            b.bed_id,
+            b.availability,
+            b.active AS bed_active,
+
+            w.ward_id,
+            w.ward_name,
+            w.ward_type,
+            w.bed_charge,
+            w.active AS ward_active
+
+        FROM admission a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN bed b
+            ON a.bed_id = b.bed_id
+
+        JOIN ward w
+            ON b.ward_id = w.ward_id
+
+        WHERE a.bed_id = #{bedId}
+
+          AND a.status = 'ADMITTED'
+
+          AND a.active = TRUE
+
+    </select>
+
+
+    <!-- =====================================================
+         FIND AVAILABLE BED BY WARD TYPE
+         ===================================================== -->
+
+    <select id="findAvailableBedByWardType"
+            resultMap="bedResultMap">
+
+        SELECT
+
+            b.bed_id,
+            b.availability,
+            b.active,
+
+            w.ward_id,
+            w.ward_name,
+            w.ward_type,
+            w.bed_charge,
+            w.active AS ward_active
+
+        FROM bed b
+
+        JOIN ward w
+            ON b.ward_id = w.ward_id
+
+        WHERE b.availability = 'AVAILABLE'
+
+          AND b.active = TRUE
+
+          AND w.active = TRUE
+
+          AND w.ward_type = #{wardType}
+
+        ORDER BY b.bed_id
+
+        LIMIT 1
+
+    </select>
+
+
+    <!-- =====================================================
+         BED RESULT MAP
+         ===================================================== -->
+
+    <resultMap id="bedResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Bed">
+
+        <id property="bedId"
+            column="bed_id"/>
+
+        <result property="availability"
+                column="availability"/>
+
+        <result property="active"
+                column="active"/>
+
+
+        <association property="ward"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Ward">
+
+            <id property="wardId"
+                column="ward_id"/>
+
+            <result property="wardName"
+                    column="ward_name"/>
+
+            <result property="wardType"
+                    column="ward_type"/>
+
+            <result property="bedCharge"
+                    column="bed_charge"/>
+
+            <result property="active"
+                    column="ward_active"/>
+
+        </association>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         GET ALL ACTIVE ADMISSIONS
+         ===================================================== -->
+
+    <select id="getAllAdmissions"
+            resultMap="admissionResultMap">
+
+        SELECT
+
+            a.admission_id,
+            a.admission_date,
+            a.discharge_date,
+            a.status,
+            a.active AS admission_active,
+
+            p.patient_id,
+            p.patient_name,
+            p.age AS patient_age,
+            p.gender AS patient_gender,
+            p.phone AS patient_phone,
+            p.active AS patient_active,
+
+            b.bed_id,
+            b.availability,
+            b.active AS bed_active,
+
+            w.ward_id,
+            w.ward_name,
+            w.ward_type,
+            w.bed_charge,
+            w.active AS ward_active
+
+        FROM admission a
+
+        JOIN patient p
+            ON a.patient_id = p.patient_id
+
+        JOIN bed b
+            ON a.bed_id = b.bed_id
+
+        JOIN ward w
+            ON b.ward_id = w.ward_id
+
+        WHERE a.active = TRUE
+
+        ORDER BY a.admission_date DESC
+
+    </select>
+
+
+    <!-- =====================================================
+         UPDATE ADMISSION
+         ===================================================== -->
+
+    <update id="updateAdmission">
+
+        UPDATE admission
+
+        SET
+            admission_date = #{admissionDate},
+            status = #{status}
+
+        WHERE admission_id = #{admissionId}
+
+          AND active = TRUE
+
+    </update>
+
+
+    <!-- =====================================================
+         DISCHARGE ADMISSION
+         ===================================================== -->
+
+    <update id="dischargeAdmission">
+
+        UPDATE admission
+
+        SET
+            discharge_date = #{dischargeDate},
+            status = 'DISCHARGED',
+            active = FALSE
+
+        WHERE admission_id = #{admissionId}
+
+          AND active = TRUE
+
+    </update>
+    <select id="getAdmissionsByPatientId"
+        resultMap="admissionResultMap">
+
+    SELECT
+
+        a.admission_id,
+        a.admission_date,
+        a.discharge_date,
+        a.status,
+        a.active AS admission_active,
+
+        p.patient_id,
+        p.patient_name,
+        p.age AS patient_age,
+        p.gender AS patient_gender,
+        p.phone AS patient_phone,
+        p.active AS patient_active,
+
+        b.bed_id,
+        b.availability,
+        b.active AS bed_active,
+
+        w.ward_id,
+        w.ward_name,
+        w.ward_type,
+        w.bed_charge,
+        w.active AS ward_active
+
+    FROM admission a
+
+    JOIN patient p
+        ON a.patient_id = p.patient_id
+
+    JOIN bed b
+        ON a.bed_id = b.bed_id
+
+    JOIN ward w
+        ON b.ward_id = w.ward_id
+
+    WHERE a.patient_id = #{patientId}
+
+    ORDER BY a.admission_date DESC
+
+</select>
+
+
+</mapper>

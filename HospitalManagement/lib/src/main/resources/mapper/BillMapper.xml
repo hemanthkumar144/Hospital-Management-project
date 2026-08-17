@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IBillMapper">
+
+    <resultMap id="billResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Bill">
+
+        <id property="billId"
+            column="bill_id"/>
+
+        <result property="consultationFee"
+                column="consultation_fee"/>
+
+        <result property="medicineCharges"
+                column="medicine_charges"/>
+
+        <result property="laboratoryCharges"
+                column="laboratory_charges"/>
+
+        <result property="bedCharges"
+                column="bed_charges"/>
+
+        <result property="totalAmount"
+                column="total_amount"/>
+
+        <result property="billDate"
+                column="bill_date"/>
+
+        <result property="status"
+                column="status"/>
+
+        <result property="active"
+                column="active"/>
+
+        <association property="patient"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Patient">
+
+            <id property="patientId"
+                column="patient_id"/>
+
+            <result property="patientName"
+                    column="patient_name"/>
+
+            <result property="age"
+                    column="age"/>
+
+            <result property="gender"
+                    column="gender"/>
+
+            <result property="phone"
+                    column="phone"/>
+
+        </association>
+
+    </resultMap>
+
+
+    <insert id="addBill">
+
+        INSERT INTO bill
+        (
+            bill_id,
+            patient_id,
+            consultation_fee,
+            medicine_charges,
+            laboratory_charges,
+            bed_charges,
+            total_amount,
+            bill_date,
+            status,
+            active
+        )
+        VALUES
+        (
+            #{billId},
+            #{patient.patientId},
+            #{consultationFee},
+            #{medicineCharges},
+            #{laboratoryCharges},
+            #{bedCharges},
+            #{totalAmount},
+            #{billDate},
+            #{status},
+            #{active}
+        )
+
+    </insert>
+
+
+    <select id="getBillById"
+            resultMap="billResultMap">
+
+        SELECT b.*,
+               p.patient_name,
+               p.age,
+               p.gender,
+               p.phone
+
+        FROM bill b
+
+        JOIN patient p
+          ON b.patient_id = p.patient_id
+
+        WHERE b.bill_id = #{billId}
+          AND b.active = TRUE
+
+    </select>
+
+
+    <select id="getAllBills"
+            resultMap="billResultMap">
+
+        SELECT b.*,
+               p.patient_name,
+               p.age,
+               p.gender,
+               p.phone
+
+        FROM bill b
+
+        JOIN patient p
+          ON b.patient_id = p.patient_id
+
+        WHERE b.active = TRUE
+
+        ORDER BY b.bill_date DESC
+
+    </select>
+
+
+    <update id="updateBill">
+
+        UPDATE bill
+
+        SET patient_id          = #{patient.patientId},
+            consultation_fee    = #{consultationFee},
+            medicine_charges   = #{medicineCharges},
+            laboratory_charges = #{laboratoryCharges},
+            bed_charges         = #{bedCharges},
+            total_amount        = #{totalAmount},
+            bill_date           = #{billDate},
+            status              = #{status}
+
+        WHERE bill_id = #{billId}
+          AND active = TRUE
+
+    </update>
+
+
+    <update id="updateBillStatus">
+
+        UPDATE bill
+
+        SET status = #{status}
+
+        WHERE bill_id = #{billId}
+          AND active = TRUE
+
+    </update>
+
+
+    <update id="deleteBill">
+
+        UPDATE bill
+
+        SET active = FALSE
+
+        WHERE bill_id = #{billId}
+          AND active = TRUE
+
+    </update>
+    <!-- =====================================================
+     GET PENDING BILLS BY PATIENT ID
+     ===================================================== -->
+
+<select id="getPendingBillsByPatientId"
+        resultMap="billResultMap">
+
+    SELECT
+        *
+    FROM bill
+
+    WHERE patient_id = #{patientId}
+      AND status = 'PENDING'
+      AND active = TRUE
+
+    ORDER BY bill_date
+
+</select>
+
+
+</mapper>

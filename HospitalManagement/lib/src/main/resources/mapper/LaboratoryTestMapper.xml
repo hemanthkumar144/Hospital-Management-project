@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.ILaboratoryTestMapper">
+
+
+    <!-- =========================================================
+         RESULT MAP
+         ========================================================= -->
+
+    <resultMap id="laboratoryTestResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.LaboratoryTest">
+
+        <id property="testId"
+            column="test_id"/>
+
+        <result property="testName"
+                column="test_name"/>
+
+        <result property="testDescription"
+                column="test_description"/>
+
+        <result property="testCharge"
+                column="test_charge"/>
+
+        <result property="testType"
+                column="test_type"/>
+
+        <result property="active"
+                column="active"/>
+
+    </resultMap>
+
+
+    <!-- =========================================================
+         GET ALL ACTIVE LABORATORY TESTS
+         ========================================================= -->
+
+    <select id="getAllTests"
+            resultMap="laboratoryTestResultMap">
+
+        SELECT
+            test_id,
+            test_name,
+            test_description,
+            test_charge,
+            test_type,
+            active
+        FROM lab_test
+        WHERE active = TRUE
+        ORDER BY test_id
+
+    </select>
+
+
+    <!-- =========================================================
+         GET LABORATORY TEST BY ID
+         ========================================================= -->
+
+    <select id="getTestById"
+            resultMap="laboratoryTestResultMap">
+
+        SELECT
+            test_id,
+            test_name,
+            test_description,
+            test_charge,
+            test_type,
+            active
+        FROM lab_test
+        WHERE test_id = #{testId}
+          AND active = TRUE
+
+    </select>
+
+
+    <!-- =========================================================
+         ADD LABORATORY TEST
+         ========================================================= -->
+
+    <insert id="addTest"
+            parameterType="com.crimsonlogic.hospitalmanagement.model.LaboratoryTest">
+
+        INSERT INTO lab_test
+        (
+            test_id,
+            test_name,
+            test_description,
+            test_charge,
+            test_type,
+            active
+        )
+        VALUES
+        (
+            #{testId},
+            #{testName},
+            #{testDescription},
+            #{testCharge},
+            #{testType},
+            #{active}
+        )
+
+    </insert>
+
+
+    <!-- =========================================================
+         UPDATE LABORATORY TEST
+         ========================================================= -->
+
+    <update id="updateTest"
+            parameterType="com.crimsonlogic.hospitalmanagement.model.LaboratoryTest">
+
+        UPDATE lab_test
+
+        SET
+            test_name = #{testName},
+            test_description = #{testDescription},
+            test_charge = #{testCharge},
+            test_type = #{testType}
+
+        WHERE test_id = #{testId}
+          AND active = TRUE
+
+    </update>
+
+
+    <!-- =========================================================
+         SOFT DELETE LABORATORY TEST
+         ========================================================= -->
+
+    <update id="deleteTest">
+
+        UPDATE lab_test
+
+        SET active = FALSE
+
+        WHERE test_id = #{testId}
+
+    </update>
+
+
+</mapper>

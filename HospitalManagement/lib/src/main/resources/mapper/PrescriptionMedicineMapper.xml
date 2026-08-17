@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.PrescriptionMedicineMapper">
+
+
+    <!-- =====================================================
+         RESULT MAP
+         ===================================================== -->
+
+    <resultMap id="prescriptionMedicineResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.PrescriptionMedicine">
+
+        <id property="prescriptionMedicineId"
+            column="prescription_medicine_id"/>
+
+        <result property="prescriptionId"
+                column="prescription_id"/>
+
+        <result property="medicineId"
+                column="medicine_id"/>
+
+        <result property="dosage"
+                column="dosage"/>
+
+        <result property="quantity"
+                column="quantity"/>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         ADD MEDICINE
+         ===================================================== -->
+
+    <insert id="addPrescriptionMedicine">
+
+        INSERT INTO prescription_medicine
+        (
+            prescription_id,
+            medicine_id,
+            dosage,
+            quantity
+        )
+
+        VALUES
+        (
+            #{prescriptionId},
+            #{medicineId},
+            #{dosage},
+            #{quantity}
+        )
+
+    </insert>
+
+
+    <!-- =====================================================
+         GET MEDICINES BY PRESCRIPTION
+         ===================================================== -->
+
+    <select id="getMedicinesByPrescriptionId"
+            resultMap="prescriptionMedicineResultMap">
+
+        SELECT
+            prescription_medicine_id,
+            prescription_id,
+            medicine_id,
+            dosage,
+            quantity
+
+        FROM prescription_medicine
+
+        WHERE prescription_id =
+              #{prescriptionId}
+
+        ORDER BY prescription_medicine_id
+
+    </select>
+
+
+    <!-- =====================================================
+         DELETE MEDICINES BY PRESCRIPTION
+         ===================================================== -->
+
+    <delete id="deleteByPrescriptionId">
+
+        DELETE FROM prescription_medicine
+
+        WHERE prescription_id =
+              #{prescriptionId}
+
+    </delete>
+
+</mapper>

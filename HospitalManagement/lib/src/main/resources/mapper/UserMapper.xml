@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IUserMapper">
+
+    <resultMap id="userAccountResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.UserAccount">
+
+        <id property="userId"
+            column="user_id"/>
+
+        <result property="username"
+                column="username"/>
+
+        <result property="passwordHash"
+                column="password_hash"/>
+
+        <result property="role"
+                column="role"/>
+
+        <result property="active"
+                column="active"/>
+
+    </resultMap>
+
+
+    <!-- Retrieves an active user during login -->
+    <select id="getUserByUsername"
+            resultMap="userAccountResultMap">
+
+        SELECT user_id,
+               username,
+               password_hash,
+               role,
+               active
+
+        FROM user_account
+
+        WHERE username = #{username}
+          AND active = TRUE
+
+    </select>
+
+
+    <!-- Creates a new user account -->
+    <insert id="addUser">
+
+        INSERT INTO user_account
+        (
+            user_id,
+            username,
+            password_hash,
+            role,
+            active
+        )
+        VALUES
+        (
+            #{userId},
+            #{username},
+            #{passwordHash},
+            #{role},
+            #{active}
+        )
+
+    </insert>
+<select id="getUserById"
+        resultMap="userAccountResultMap">
+
+    SELECT user_id,
+           username,
+           password_hash,
+           role,
+           active
+
+    FROM user_account
+
+    WHERE user_id = #{userId}
+      AND active = TRUE
+
+</select>
+
+    <!-- Soft deletes a user account -->
+    <update id="deactivateUser">
+
+        UPDATE user_account
+
+        SET active = FALSE
+
+        WHERE user_id = #{userId}
+
+    </update>
+
+</mapper>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IDoctorMapper">
+
+
+    <!-- =====================================================
+         DOCTOR RESULT MAP
+         Maps database columns to Doctor object properties
+         ===================================================== -->
+
+    <resultMap id="doctorResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Doctor">
+
+        <id property="staffId"
+            column="staff_id"/>
+
+        <result property="name"
+                column="staff_name"/>
+
+        <result property="age"
+                column="age"/>
+
+        <result property="gender"
+                column="gender"/>
+
+        <result property="phone"
+                column="phone"/>
+
+        <result property="salary"
+                column="salary"/>
+
+        <result property="specialization"
+                column="specialization"/>
+
+        <result property="experience"
+                column="experience"/>
+
+        <!-- Consultation fee -->
+        <result property="consultationFee"
+                column="consultation_fee"/>
+
+        <result property="active"
+                column="active"/>
+        <result property="userId"
+        		column="user_id"/>
+
+
+        <!-- Department details -->
+        <association property="department"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Department">
+
+            <id property="departmentId"
+                column="department_id"/>
+
+            <result property="departmentName"
+                    column="department_name"/>
+
+            <result property="location"
+                    column="department_location"/>
+
+        </association>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         ADD DOCTOR
+         ===================================================== -->
+
+    <insert id="addDoctor">
+
+       INSERT INTO doctor
+(
+    staff_id,
+    user_id,
+    staff_name,
+    age,
+    gender,
+    phone,
+    salary,
+    specialization,
+    experience,
+    consultation_fee,
+    department_id,
+    active
+)
+VALUES
+(
+    #{staffId},
+    #{userId},
+    #{name},
+    #{age},
+    #{gender},
+    #{phone},
+    #{salary},
+    #{specialization},
+    #{experience},
+    #{consultationFee},
+    #{department.departmentId},
+    #{active}
+)
+
+    </insert>
+
+
+    <!-- =====================================================
+         GET DOCTOR BY ID
+         ===================================================== -->
+
+    <select id="getDoctorById"
+            resultMap="doctorResultMap">
+
+        SELECT
+            d.*,
+            dep.department_name,
+            dep.location AS department_location
+
+        FROM doctor d
+
+        JOIN department dep
+          ON d.department_id = dep.department_id
+
+        WHERE d.staff_id = #{staffId}
+          AND d.active = TRUE
+
+    </select>
+
+
+    <!-- =====================================================
+         GET ALL DOCTORS
+         ===================================================== -->
+
+    <select id="getAllDoctors"
+            resultMap="doctorResultMap">
+
+        SELECT
+            d.*,
+            dep.department_name,
+            dep.location AS department_location
+
+        FROM doctor d
+
+        JOIN department dep
+          ON d.department_id = dep.department_id
+
+        WHERE d.active = TRUE
+
+        ORDER BY d.staff_name
+
+    </select>
+
+
+    <!-- =====================================================
+         UPDATE DOCTOR
+         ===================================================== -->
+
+    <update id="updateDoctor">
+
+        UPDATE doctor
+
+        SET staff_name       = #{name},
+            age              = #{age},
+            gender           = #{gender},
+            phone            = #{phone},
+            salary           = #{salary},
+            specialization   = #{specialization},
+            experience       = #{experience},
+            consultation_fee = #{consultationFee},
+            department_id    = #{department.departmentId}
+
+        WHERE staff_id = #{staffId}
+          AND active = TRUE
+
+    </update>
+
+
+    <!-- =====================================================
+         DELETE DOCTOR
+         ===================================================== -->
+
+    <update id="deleteDoctor">
+
+        UPDATE doctor
+
+        SET active = FALSE
+
+        WHERE staff_id = #{staffId}
+          AND active = TRUE
+
+    </update>
+    <select id="getDoctorByUserId"
+        resultMap="doctorResultMap">
+
+    SELECT
+        d.*,
+        dep.department_name,
+        dep.location AS department_location
+    FROM doctor d
+    JOIN department dep
+        ON d.department_id = dep.department_id
+    WHERE d.user_id = #{userId}
+      AND d.active = TRUE
+
+</select>
+
+</mapper>

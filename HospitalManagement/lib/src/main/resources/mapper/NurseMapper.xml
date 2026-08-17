@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.INurseMapper">
+
+    <!--
+        Maps the nurse table columns to the Nurse object.
+
+        Since Nurse extends Staff, the common Staff properties
+        are also mapped here.
+    -->
+    <resultMap id="nurseResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Nurse">
+
+        <!-- Inherited Staff ID -->
+        <id property="staffId"
+            column="staff_id"/>
+
+        <!-- Inherited Staff properties -->
+        <result property="name"
+                column="staff_name"/>
+
+        <result property="age"
+                column="age"/>
+
+        <result property="gender"
+                column="gender"/>
+
+        <result property="phone"
+                column="phone"/>
+
+        <result property="salary"
+                column="salary"/>
+
+        <!-- Nurse-specific properties -->
+        <result property="shift"
+                column="shift"/>
+
+        <result property="active"
+                column="active"/>
+                <result property="userId"
+        column="user_id"/>
+
+        <!-- Department relationship -->
+        <association property="department"
+                     javaType="com.crimsonlogic.hospitalmanagement.model.Department">
+
+            <id property="departmentId"
+                column="department_id"/>
+
+            <result property="departmentName"
+                    column="department_name"/>
+
+            <result property="location"
+                    column="department_location"/>
+
+        </association>
+
+    </resultMap>
+
+
+    <!-- Add a new nurse -->
+    <insert id="addNurse">
+INSERT INTO nurse
+(
+    staff_id,
+    user_id,
+    staff_name,
+    age,
+    gender,
+    phone,
+    salary,
+    department_id,
+    shift,
+    active
+)
+VALUES
+(
+    #{staffId},
+    #{userId},
+    #{name},
+    #{age},
+    #{gender},
+    #{phone},
+    #{salary},
+    #{department.departmentId},
+    #{shift},
+    #{active}
+)
+    </insert>
+
+
+    <!-- Get nurse by ID -->
+    <select id="getNurseById"
+            resultMap="nurseResultMap">
+
+        SELECT
+            n.staff_id,
+            n.staff_name,
+            n.age,
+            n.gender,
+            n.phone,
+            n.salary,
+            n.department_id,
+            n.shift,
+            n.active,
+
+            d.department_name,
+            d.location AS department_location
+
+        FROM nurse n
+
+        LEFT JOIN department d
+            ON n.department_id = d.department_id
+
+        WHERE n.staff_id = #{staffId} and n.active=true
+
+    </select>
+
+
+    <!-- Get all active nurses -->
+    <select id="getAllNurses"
+            resultMap="nurseResultMap">
+
+        SELECT
+            n.staff_id,
+            n.staff_name,
+            n.age,
+            n.gender,
+            n.phone,
+            n.salary,
+            n.department_id,
+            n.shift,
+            n.active,
+
+            d.department_name,
+            d.location AS department_location
+
+        FROM nurse n
+
+        LEFT JOIN department d
+            ON n.department_id = d.department_id
+
+        WHERE n.active = TRUE
+
+    </select>
+
+
+    <!-- Update an active nurse -->
+    <update id="updateNurse">
+
+        UPDATE nurse
+
+        SET staff_name = #{name},
+            age = #{age},
+            gender = #{gender},
+            phone = #{phone},
+            salary = #{salary},
+            department_id = #{department.departmentId},
+            shift = #{shift}
+
+        WHERE staff_id = #{staffId}
+          AND active = TRUE
+
+    </update>
+
+
+    <!-- Soft delete a nurse -->
+    <update id="deactivateNurse">
+
+        UPDATE nurse
+
+        SET active = FALSE
+
+        WHERE staff_id = #{staffId}
+
+    </update>
+    <select id="getNurseByUserId"
+        resultMap="nurseResultMap">
+
+    SELECT
+        n.*,
+        d.department_name,
+        d.location AS department_location
+    FROM nurse n
+    LEFT JOIN department d
+        ON n.department_id = d.department_id
+    WHERE n.user_id = #{userId}
+      AND n.active = TRUE
+
+</select>
+
+</mapper>

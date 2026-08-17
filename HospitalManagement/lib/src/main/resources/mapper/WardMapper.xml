@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crimsonlogic.hospitalmanagement.mapper.IWardMapper">
+
+
+    <!-- =====================================================
+         WARD RESULT MAP
+         ===================================================== -->
+
+    <resultMap id="wardResultMap"
+               type="com.crimsonlogic.hospitalmanagement.model.Ward">
+
+        <id property="wardId"
+            column="ward_id"/>
+
+        <result property="wardName"
+                column="ward_name"/>
+
+        <result property="wardType"
+                column="ward_type"/>
+
+        <result property="bedCharge"
+                column="bed_charge"/>
+
+        <result property="active"
+                column="active"/>
+
+    </resultMap>
+
+
+    <!-- =====================================================
+         ADD WARD
+         ===================================================== -->
+
+    <insert id="addWard">
+
+        INSERT INTO ward
+        (
+            ward_id,
+            ward_name,
+            ward_type,
+            bed_charge,
+            active
+        )
+        VALUES
+        (
+            #{wardId},
+            #{wardName},
+            #{wardType},
+            #{bedCharge},
+            #{active}
+        )
+
+    </insert>
+
+
+    <!-- =====================================================
+         GET WARD BY ID
+         ===================================================== -->
+
+    <select id="getWardById"
+            resultMap="wardResultMap">
+
+        SELECT
+            ward_id,
+            ward_name,
+            ward_type,
+            bed_charge,
+            active
+
+        FROM ward
+
+        WHERE ward_id = #{wardId}
+
+          AND active = TRUE
+
+    </select>
+
+
+    <!-- =====================================================
+         GET ALL ACTIVE WARDS
+         ===================================================== -->
+
+    <select id="getAllWards"
+            resultMap="wardResultMap">
+
+        SELECT
+            ward_id,
+            ward_name,
+            ward_type,
+            bed_charge,
+            active
+
+        FROM ward
+
+        WHERE active = TRUE
+
+        ORDER BY ward_id
+
+    </select>
+
+
+    <!-- =====================================================
+         UPDATE WARD
+         ===================================================== -->
+
+    <update id="updateWard">
+
+        UPDATE ward
+
+        SET
+            ward_name = #{wardName},
+            ward_type = #{wardType},
+            bed_charge = #{bedCharge}
+
+        WHERE ward_id = #{wardId}
+
+          AND active = TRUE
+
+    </update>
+
+
+    <!-- =====================================================
+         SOFT DELETE WARD
+         ===================================================== -->
+
+    <update id="deleteWard">
+
+        UPDATE ward
+
+        SET active = FALSE
+
+        WHERE ward_id = #{wardId}
+
+          AND active = TRUE
+
+    </update>
+
+
+</mapper>
